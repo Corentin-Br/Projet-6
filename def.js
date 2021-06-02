@@ -13,6 +13,9 @@ const buttons_previous = document.querySelectorAll('button.previous');
 const categories = document.querySelectorAll('div.category');
 //La div qui représente le meilleur film
 const best_movie_div = document.querySelector('div.bestmovie');
+//Les boutons qui ouvrent les modales
+const buttons_modal = document.querySelectorAll('button.open_modal');
+
 
 
 // Return a json with the data asked to the API. It can technically be any URL but...
@@ -59,7 +62,8 @@ const set_categories = async category => {
 	movies = category.children[2].children
 	//Iterate over movie_data to set the images. It should only display a certain number and hide the others. /!\ If movie_data.length and movies.length are different, there will be issues. The HTML must be set correctly.
 	movie_data.forEach((movie, index) => {
-		movies[index].setAttribute("src", movie_data[index].image_url);
+		movies[index].children[0].setAttribute("src", movie_data[index].image_url);
+		movies[index].children[0].setAttribute("movie_url", movie_data[index].url);
 		if (index >= movies_displayed) {
 			movies[index].setAttribute("hidden", "")
 		}
@@ -97,6 +101,37 @@ const set_best_movie = async () => {
 	best_movie_div.children[3].setAttribute("src", best_movie.image_url)
 }
 
+const open_modal = async(balise, event) => {
+	console.log(balise);
+	movie_info = await get_query_result(balise.getAttribute("movie_url"));
+	console.log(movie_info);
+	const modal = document.getElementById(balise.parentElement.getAttribute("aria-controls"));
+	modal.setAttribute("aria-hidden", false);
+	load_modal(modal, movie_info, balise.getAttribute("src"))
+}
+
+const load_modal = (modal, infos, url) => {
+	modal.children[1].innerHTML = infos.title
+	modal.children[2].innerHTML = "informations à propos de ${infos.title}"
+	modal.children[3].setAttribute("src", url)
+	modal.children[4].innerHTML = `
+			<ul>
+				<li>Titre : ${infos.title}</li>
+				<li>Genres : TRANSFORMER LA LISTE EN CHAINE </li>
+				<li>Date de sortie: ${infos.date_published}</li>
+				<li>Limite d'âge: IL FAUT LE TRADUIRE.</li>
+				<li>Score IMDB : ${infos.imdb_score}</li>
+				<li>Réalisateur : TRANSFORMER LA LISTE EN CHAINE</li>
+				<li>Acteurs : CF AU-DESSUS</li>
+				<li>durée : CONVERTIR LES MINUTES EN HEURES</li>
+				<li>pays d'origine: TRANSFORMER LA LISTE EN CHAINE </li>
+				<li>Résultat au box office: IL FAUT TRADUIRE SI JAMAIS C'EST NULL</li>
+				<li> Résumé = ${infos.long_description} </li>
+			</ul> 
+			`
+}	
+	
+
 // Set the event for next buttons.
 buttons_next.forEach(button => button.addEventListener('click', event => change_displayed_movies(button.parentElement, event, 1)));
 
@@ -109,6 +144,9 @@ categories.forEach(async category => {
 })
 //Initialize the best movie.
 set_best_movie()
+
+// Charge la modale et l'ouvre.
+buttons_modal.forEach(button => button.addEventListener('click', event => open_modal(button.children[0], event)));
 
 
 //TODO:
