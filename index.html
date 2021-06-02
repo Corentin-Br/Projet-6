@@ -6,77 +6,80 @@
 	</head>
 	
 	<body>
-		<div class=topsection>
-			<h1>JustStreamIt</h1>
-			<nav>
-				<ul>
-					<li><a href="#">Accueil</a></li>
-					<li><a href="#">Catégories</a/></li>
-				</ul>
-			</nav>
-		</div>
-		<div class=bestmovie>
-			<h1>Titre de la vidéo</h1> <!-- Doit être remplacé par du JS pour obtenir le titre de la vidéo la mieux notée... -->
-			<button class=play>Play</button>
-			<p>Résumé du film</p> <!-- JS -->
-			<!-- L'image sera placée en image de fond de la classe -->
-		</div>
-		<div class=category query="sort_by=-imdb_score" indice=0>
-			<h1>Films les mieux notés</h1> <!-- JS-->
-			<button class=previous>Défiler vers la gauche</button>
-			<div class=moviecontainers indice=0>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
+		<main>
+			<div class=topsection>
+				<h1>JustStreamIt</h1>
+				<nav>
+					<ul>
+						<li><a href="#">Accueil</a></li>
+						<li><a href="#">Catégories</a/></li>
+					</ul>
+				</nav>
 			</div>
-			<button class=next counter=0>Défiler vers la droite</button>
-		</div>
-		<div class=category query="genre=Biography&sort_by=-imdb_score" indice=0>
-			<h1>Biographie</h1> <!-- JS-->
-			<button class=previous>Défiler vers la gauche</button>
-			<div class=moviecontainers indice=0>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
+			<div class=bestmovie>
+				<h1>Titre de la vidéo</h1> <!-- Doit être remplacé par du JS pour obtenir le titre de la vidéo la mieux notée... -->
+				<button class=more_info>Plus d'informations</button>
+				<p>Résumé du film</p>
+				<img class=bestmovie src = ""></img>
+				<!-- L'image sera placée en image de fond de la classe -->
 			</div>
-			<button class=next counter=0>Défiler vers la droite</button>
-		</div>
-		<div class=category query="genre=Crime&sort_by=-imdb_score" indice=0>
-			<h1>Crime</h1> <!-- JS-->
-			<button class=previous>Défiler vers la gauche</button>
-			<div class=moviecontainers indice=0>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
+			<div class=category query="sort_by=-imdb_score" indice=0>
+				<h1>Films les mieux notés</h1> <!-- JS-->
+				<button class=previous>Défiler vers la gauche</button>
+				<div class=moviecontainers indice=0>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+				</div>
+				<button class=next counter=0>Défiler vers la droite</button>
 			</div>
-			<button class=next counter=0>Défiler vers la droite</button>
-		</div>
-		<div class=category query="genre=Drama&sort_by=-imdb_score" indice=0>
-			<h1>Drama</h1> <!-- JS-->
-			<button class=previous>Défiler vers la gauche</button>
-			<div class=moviecontainers indice=0>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
-				<img class=movie src=""></img>
+			<div class=category query="genre=Biography&sort_by=-imdb_score" indice=0>
+				<h1>Biographie</h1> <!-- JS-->
+				<button class=previous>Défiler vers la gauche</button>
+				<div class=moviecontainers indice=0>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+				</div>
+				<button class=next counter=0>Défiler vers la droite</button>
 			</div>
-			<button class=next>Défiler vers la droite</button>
-		</div>
+			<div class=category query="genre=Crime&sort_by=-imdb_score" indice=0>
+				<h1>Crime</h1> <!-- JS-->
+				<button class=previous>Défiler vers la gauche</button>
+				<div class=moviecontainers indice=0>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+				</div>
+				<button class=next counter=0>Défiler vers la droite</button>
+			</div>
+			<div class=category query="genre=Drama&sort_by=-imdb_score" indice=0>
+				<h1>Drama</h1> <!-- JS-->
+				<button class=previous>Défiler vers la gauche</button>
+				<div class=moviecontainers indice=0>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+					<img class=movie src=""></img>
+				</div>
+				<button class=next>Défiler vers la droite</button>
+			</div>
+		</main>
 		<script src="./def.js"></script>
 	</body>
 </html>
