@@ -15,6 +15,13 @@ const categories = document.querySelectorAll('div.category');
 const best_movie_div = document.querySelector('div.bestmovie');
 //Les boutons qui ouvrent les modales
 const buttons_modal = document.querySelectorAll('button.open_modal');
+const best_movie_button_modal = document.querySelector('button.best_movie_open_modal')
+//Le bouton qui ferme la modale
+const modal_close_button = document.querySelector('button[data-dismiss]');
+// Dernier focus (pour quand on ferme)
+var last_focus;
+// La modale
+var modal = document.getElementById("movie_informations");
 
 
 
@@ -63,6 +70,7 @@ const set_categories = async category => {
 	//Iterate over movie_data to set the images. It should only display a certain number and hide the others. /!\ If movie_data.length and movies.length are different, there will be issues. The HTML must be set correctly.
 	movie_data.forEach((movie, index) => {
 		movies[index].children[0].setAttribute("src", movie_data[index].image_url);
+		movies[index].children[0].setAttribute("alt", movie_data[index].title)
 		movies[index].children[0].setAttribute("movie_url", movie_data[index].url);
 		if (index >= movies_displayed) {
 			movies[index].setAttribute("hidden", "")
@@ -99,34 +107,67 @@ const set_best_movie = async () => {
 	const details = await get_query_result(best_movie.url)
 	best_movie_div.children[2].innerHTML = details.description
 	best_movie_div.children[3].setAttribute("src", best_movie.image_url)
+	best_movie_div.children[3].setAttribute("alt", best_movie.title)
+	best_movie_div.children[3].setAttribute("movie_url", best_movie.url)
 }
 
-const open_modal = async(balise, event) => {
-	console.log(balise);
-	movie_info = await get_query_result(balise.getAttribute("movie_url"));
-	console.log(movie_info);
-	const modal = document.getElementById(balise.parentElement.getAttribute("aria-controls"));
+const open_modal = async(button, movie_url, image_url) => {
+	movie_info = await get_query_result(movie_url)
+	const main_doc = document.getElementById("main-content")
+	main_doc.setAttribute("aria-hidden", true);
 	modal.setAttribute("aria-hidden", false);
-	load_modal(modal, movie_info, balise.getAttribute("src"))
+	load_modal(modal, movie_info, image_url);
+	window.setTimeout(() => {
+		modal_close_button.focus();
+  }, 100) // Ca met le focus sur le bouton fermer, ça permet la navigation au clavier.
+	last_focus = button
 }
+
+const close_modal = (button) => {
+	const modal = button.parentElement;
+	const main_doc = document.getElementById("main-content");
+	main_doc.setAttribute("aria-hidden", false);
+	modal.setAttribute("aria-hidden", true);
+	last_focus.focus()
+}
+	
+
+const convert_in_hours = (time_in_minutes) => {
+	let hours;
+	let leftover_minutes;
+	if (time_in_minutes >= 60) {
+		leftover_minutes = time_in_minutes % 60
+		hours = (time_in_minutes - leftover_minutes) / 60
+	} else {
+		hours = 0
+	}
+	if (hours === 0) {
+		return "${time_in_minutes} minutes"
+	} else if (leftover_minutes === 0) {
+			return "${hours > 1 ? '${hours} heures' : '1 heure'}"
+	} else {
+		return `${hours > 1 ? `${hours} heures` : "1 heure"} et ${leftover_minutes > 1 ? `${leftover_minutes} minutes` : "1 minute"}`
+	}
+}
+	
 
 const load_modal = (modal, infos, url) => {
 	modal.children[1].innerHTML = infos.title
-	modal.children[2].innerHTML = "informations à propos de ${infos.title}"
+	modal.children[2].innerHTML = `informations à propos de ${infos.title}`
 	modal.children[3].setAttribute("src", url)
 	modal.children[4].innerHTML = `
 			<ul>
 				<li>Titre : ${infos.title}</li>
-				<li>Genres : TRANSFORMER LA LISTE EN CHAINE </li>
+				<li>Genres : ${infos.genres.join(", ")}</li>
 				<li>Date de sortie: ${infos.date_published}</li>
-				<li>Limite d'âge: IL FAUT LE TRADUIRE.</li>
+				<li>Limite d'âge: ${infos.rated === "Not rated or unkown rating" ? "Inconnue" : infos.rated}</li>
 				<li>Score IMDB : ${infos.imdb_score}</li>
-				<li>Réalisateur : TRANSFORMER LA LISTE EN CHAINE</li>
-				<li>Acteurs : CF AU-DESSUS</li>
-				<li>durée : CONVERTIR LES MINUTES EN HEURES</li>
-				<li>pays d'origine: TRANSFORMER LA LISTE EN CHAINE </li>
-				<li>Résultat au box office: IL FAUT TRADUIRE SI JAMAIS C'EST NULL</li>
-				<li> Résumé = ${infos.long_description} </li>
+				<li>Réalisateur : ${infos.directors.join(", ")}</li>
+				<li>Acteurs : ${infos.actors.join(", ")}</li>
+				<li>durée : ${convert_in_hours(infos.duration)}</li>
+				<li>pays d'origine: ${infos.countries.join(", ")} </li>
+				<li>Résultat au box office: ${infos.worldwide_gross_income === null ? "inconnu" : `${infos.worldwide_gross_income} USD`}</li>
+				<li> Résumé : ${infos.long_description} </li>
 			</ul> 
 			`
 }	
@@ -146,10 +187,14 @@ categories.forEach(async category => {
 set_best_movie()
 
 // Charge la modale et l'ouvre.
-buttons_modal.forEach(button => button.addEventListener('click', event => open_modal(button.children[0], event)));
+buttons_modal.forEach(button => button.addEventListener('click', event => open_modal(button, button.children[0].getAttribute("movie_url"), button.children[0].getAttribute("src"))));
+best_movie_button_modal.addEventListener('click', event => {
+	balise = best_movie_button_modal.nextElementSibling.nextElementSibling;
+	open_modal(best_movie_button_modal, balise.getAttribute("movie_url"), balise.getAttribute("src"))
+})
 
+//ferme la modale.
+modal_close_button.addEventListener('click', event => close_modal(modal_close_button))
 
-//TODO:
-//Fenêtre modale -> La créer, Comment sont obtenues les données? On les fout quelque part? Elles sont fetchées? Peut-être que je mets l'URL où les fetcher dans le HTML?
 
 	
