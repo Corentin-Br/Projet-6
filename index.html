@@ -8,7 +8,7 @@
 	
 	<body>
 		<main id="main-content">
-			<div class=topsection>
+			<div class="topsection">
 				<h1>JustStreamIt</h1>
 				<nav>
 					<ul>
@@ -17,22 +17,26 @@
 					</ul>
 				</nav>
 			</div>
-			<div class=bestmovie>
-				<h1>Titre de la vidéo</h1> 
-				<button
-					class="best_movie_open_modal"
-					type="button" 
-					aria-haspopup="dialog"
-					aria-controls="movie_informations">
+			<div class="bestmovie">
+				<div class="bestmovietext">
+					<h1>Titre de la vidéo</h1> 
+					<button
+						class="best_movie_open_modal"
+						type="button" 
+						aria-haspopup="dialog"
+						aria-controls="movie_informations">
+						Play
 					</button>
-				<p>Résumé du film</p>
-				<img class=bestmovie src = ""></img>
+					<p>Résumé du film</p>
+				</div>
+				<img class="bestmovieimage" src = ""></img>
 			</div>
-			<div class=category query="sort_by=-imdb_score" indice=0>
+			<div class="category" query="sort_by=-imdb_score" indice=0>
 				<h1>Films les mieux notés</h1> <!-- JS-->
-				<button class=previous type="button">Défiler vers la gauche</button>
-				<div class=moviecontainers indice=0>
-					
+				<div class="moviecontainers" indice=0>
+					<button class="previous" type="button">
+						<img src="arrow-left.svg" alt="Défiler vers la gauche"></img>
+					</button>
 					<button
 					class="open_modal"
 					type="button" 
@@ -80,77 +84,98 @@
 					type="button" 
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
-						<img class=movie src=""></img>
-					</button>								
+						<img class="movie" src=""></img>
+					</button>		
+				<button class="next" type="button"><img src="arrow-right.svg" alt="Défiler vers la droite"></img></button>
 				</div>
-				<button class=next type="button">Défiler vers la droite</button>
 			</div>
-			<div class=category query="genre=Biography&sort_by=-imdb_score" indice=0>
+			<div class="category" query="genre=Biography&sort_by=-imdb_score" indice=0>
 				<h1>Biographie</h1> <!-- JS-->
-				<button class=previous type="button">Défiler vers la gauche</button>
-				<div class=moviecontainers indice=0>
+				<div class="moviecontainers" indice=0>
+					<button class="previous" type="button">Défiler vers la gauche</button>
 					<button
 					class="open_modal"
 					type="button" 
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
-						<img class=movie src=""></img>
+						<img class="movie" src=""></img>
 					</button>	
 					<button
 					class="open_modal"
 					type="button" 
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
-						<img class=movie src=""></img>
+						<img class="movie" src=""></img>
 					</button>	
 					<button
 					class="open_modal"
 					type="button" 
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
-						<img class=movie src=""></img>
+						<img class="movie" src=""></img>
 					</button>	
 					<button
 					class="open_modal"
 					type="button" 
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
-						<img class=movie src=""></img>
+						<img class="movie" src=""></img>
 					</button>	
 					<button
 					class="open_modal"
 					type="button" 
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
-						<img class=movie src=""></img>
+						<img class="movie" src=""></img>
 					</button>	
 					<button
 					class="open_modal"
 					type="button" 
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
-						<img class=movie src=""></img>
+						<img class="movie" src=""></img>
 					</button>	
 					<button
 					class="open_modal"
 					type="button" 
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
-						<img class=movie src=""></img>
-					</button>	
+						<img class="movie" src=""></img>
+					</button>
+				<button class="next" type="button">Défiler vers la droite</button>
 				</div>
-				<button class=next type="button">Défiler vers la droite</button>
 			</div>
-			<div class=category query="genre=Crime&sort_by=-imdb_score" indice=0>
+			<div class="category" query="genre=Crime&sort_by=-imdb_score" indice=0>
 				<h1>Crime</h1> <!-- JS-->
-				<button class=previous type="button">Défiler vers la gauche</button>
-				<div class=moviecontainers indice=0>
+				<div class="moviecontainers" indice=0>
+					<button class="previous" type="button">Défiler vers la gauche</button>
 					<button
 					class="open_modal"
 					type="button" 
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
-						<img class=movie src=""></img>
+						<img class="movie" src=""></img>
+					</button>	
+					<button
+					class="open_modal"
+					type="button" 
+					aria-haspopup="dialog"
+					aria-controls="movie_informations">
+						<img class="movie" src=""></img>
+					</button>	
+					<button
+					class="open_modal"
+					type="button" 
+					aria-haspopup="dialog"
+					aria-controls="movie_informations">
+						<img class="movie" src=""></img>
+					</button>	
+					<button
+					class="open_modal"
+					type="button" 
+					aria-haspopup="dialog"
+					aria-controls="movie_informations">
+						<img class="movie src=""></img>
 					</button>	
 					<button
 					class="open_modal"
@@ -172,35 +197,14 @@
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
 						<img class=movie src=""></img>
-					</button>	
-					<button
-					class="open_modal"
-					type="button" 
-					aria-haspopup="dialog"
-					aria-controls="movie_informations">
-						<img class=movie src=""></img>
-					</button>	
-					<button
-					class="open_modal"
-					type="button" 
-					aria-haspopup="dialog"
-					aria-controls="movie_informations">
-						<img class=movie src=""></img>
-					</button>	
-					<button
-					class="open_modal"
-					type="button" 
-					aria-haspopup="dialog"
-					aria-controls="movie_informations">
-						<img class=movie src=""></img>
-					</button>					
+					</button>
+				<button class="next" counter=0>Défiler vers la droite</button>
 				</div>
-				<button class=next counter=0>Défiler vers la droite</button>
 			</div>
-			<div class=category query="genre=Drama&sort_by=-imdb_score" indice=0>
+			<div class="category" query="genre=Drama&sort_by=-imdb_score" indice=0>
 				<h1>Drama</h1> <!-- JS-->
-				<button class=previous type="button">Défiler vers la gauche</button>
-				<div class=moviecontainers indice=0>
+				<div class="moviecontainers" indice=0>
+					<button class="previous" type="button">Défiler vers la gauche</button>
 					<button
 					class="open_modal"
 					type="button" 
@@ -249,9 +253,9 @@
 					aria-haspopup="dialog"
 					aria-controls="movie_informations">
 						<img class=movie src="" movie_url=""></img>
-					</button>				
+					</button>
+					<button class="next" type"button">Défiler vers la droite</button>
 				</div>
-				<button class=next type"button">Défiler vers la droite</button>
 			</div>
 		</main>
 		<!-- J'ai utilisé https://jolicode.com/blog/une-fenetre-modale-accessible -->
@@ -275,7 +279,7 @@
 				aria-label="Fermer"
 				title="Fermer la fenêtre avec les détails du film"
 				data-dismiss="movies_informations">
-					fermer
+					<img src="croix_modifiée.png" alt="fermer"></img>
 			</button>
 			<h2 id="movie_informations-title"> Nom du film </h2>
 			<p id ="movie_informations-desc"> Informations à propos de Nom du film </p>
@@ -288,10 +292,10 @@
 				<li>Score IMDB</li>
 				<li>Réalisateur</li>
 				<li>Acteurs</li>
-				<li>durée</li>
-				<li>pays d'origine</li>
+				<li>Durée</li>
+				<li>Pays d'origine</li>
 				<li>Résultat au box office</li>
-				<li> Résumé </li>
+				<li>Résumé </li>
 			</ul>
 		</div>
 		
