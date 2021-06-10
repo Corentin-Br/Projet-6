@@ -2,8 +2,8 @@ var answers_per_API_page = 5;
 var movies_per_category = 7;
 var movies_displayed = 4;
 const categories = document.querySelectorAll('div.category');
-const best_movie_div = document.querySelector('div.bestmovie');
-const best_movie_button_modal = document.querySelector('button.best_movie_open_modal');
+const best_movie_div = document.querySelector('div.best_movie');
+const best_movie_button_modal = document.querySelector('button.best_movie__open_modal');
 const modal_close_button = document.querySelector('button[data-dismiss]');
 var last_focus;
 var modal = document.querySelector(".movie_informations");
@@ -42,7 +42,7 @@ const create_direction_button = function(parent, direction) {
 		shift = -1
 	}
 	parent.appendChild(button);
-	button.setAttribute("class", direction);
+	button.setAttribute("class", `category__${direction}`);
 	button.setAttribute("type", "button");
 	button.innerHTML = `<img src=${image}  alt=${text}></img>`;
 	button.addEventListener('click', event => change_displayed_movies(parent, shift));
@@ -52,7 +52,7 @@ const create_direction_button = function(parent, direction) {
 const create_modal_button = function(parent, data, index) {
 	const modal_button = document.createElement("button");
 	parent.appendChild(modal_button);
-	modal_button.setAttribute("class", "open_modal");
+	modal_button.setAttribute("class", "category__open_modal");
 	modal_button.setAttribute("type", "button");
 	modal_button.setAttribute("aria-haspopups", "dialog");
 	modal_button.setAttribute("aria-controls", "movie_informations");

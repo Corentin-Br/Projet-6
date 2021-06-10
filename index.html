@@ -17,11 +17,11 @@
 					</ul>
 				</nav>
 			</div>
-			<div class="bestmovie">
-				<div class="bestmovietext">
+			<div class="best_movie">
+				<div class="best_movie__text">
 					<h1>Titre de la vidéo</h1> 
 					<button
-						class="best_movie_open_modal"
+						class="best_movie__open_modal"
 						type="button" 
 						aria-haspopup="dialog"
 						aria-controls="movie_informations">
@@ -29,23 +29,23 @@
 					</button>
 					<p>Résumé du film</p>
 				</div>
-				<img class="bestmovieimage" src = ""></img>
+				<img class="best_movie__image" src = ""></img>
 			</div>
 			<div class="category" query="sort_by=-imdb_score">
 				<h1>Films les mieux notés</h1>
-				<div class="moviecontainers"></div>
+				<div class="category__movie_container"></div>
 			</div>
 			<div class="category" query="genre=Biography&sort_by=-imdb_score">
 				<h1>Biographie</h1> <!-- JS-->
-				<div class="moviecontainers"></div>
+				<div class="category__movie_container"></div>
 			</div>
 			<div class="category" query="genre=Crime&sort_by=-imdb_score">
 				<h1>Crime</h1> <!-- JS-->
-				<div class="moviecontainers"></div>
+				<div class="category__movie_container"></div>
 			</div>
 			<div class="category" query="genre=Drama&sort_by=-imdb_score">
 				<h1>Drama</h1> <!-- JS-->
-				<div class="moviecontainers"></div>
+				<div class="category__movie_container"></div>
 			</div>
 		</main>
 		<!-- J'ai utilisé https://jolicode.com/blog/une-fenetre-modale-accessible -->
