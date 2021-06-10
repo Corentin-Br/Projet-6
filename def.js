@@ -1,109 +1,94 @@
-//How many answers per page does the APi send.
 var answers_per_API_page = 5 
-//How many movies are to be displayed in total per category.
-var movies_per_category = 7 // If this value is changed, the html must be changed too.
-//How many movies are to displayed simultaneously per category.
+var movies_per_category = 7
 var movies_displayed = 4 
-
-//All buttons next
-const buttons_next = document.querySelectorAll('button.next');
-//All buttons previous
-const buttons_previous = document.querySelectorAll('button.previous');
-//All categories
 const categories = document.querySelectorAll('div.category');
-//La div qui représente le meilleur film
 const best_movie_div = document.querySelector('div.bestmovie');
-//Les boutons qui ouvrent les modales
-const buttons_modal = document.querySelectorAll('button.open_modal');
 const best_movie_button_modal = document.querySelector('button.best_movie_open_modal')
-//Le bouton qui ferme la modale
 const modal_close_button = document.querySelector('button[data-dismiss]');
-// Dernier focus (pour quand on ferme)
 var last_focus;
-// La modale
 var modal = document.getElementById("movie_informations");
-const all_main_buttons = document.querySelectorAll('main button');
+var all_main_buttons = []
 
 
-
-// Return a json with the data asked to the API. It can technically be any URL but...
-const get_query_result = async url => {
+const get_query_result = async function(url) {
 	res = await fetch(url);
 	if (res.ok) {
 		return res.json();
 	}
 };
 
-//  Renvoie une liste avec toutes les infos dont j'ai besoin.
-const get_movies = async (query_url, starting_movie) => {
-	//Récupère les infos de la première page
+const get_movies = async function(query_url, starting_movie) {
 	const first_page = await get_query_result(query_url)
-	// Calcule combien de pages il faut aller chercher.
 	const pages_to_fetch = Math.ceil((movies_per_category + starting_movie) / answers_per_API_page);
-	// Crée les urls de toutes les pages dont on a besoin.
 	const pages_url = Array(pages_to_fetch - 1).fill(1).map((element, index) => `${query_url}&page=${index+2}`);
-	// Récupère les infos de toute les pages.
-	// On ne PEUT PAS directement faire du map, parce qu'il y a une fonction async appelée plusieurs fois. J'ai utilisé https://advancedweb.hu/how-to-use-async-functions-with-array-map-in-javascript/
-	// En l'occurrence je fais du séquentiel, je fais un appel après l'autre.
 	const data = await pages_url.reduce(
 		async (accumulator, value) => {
 			const new_result = await get_query_result(value);
-			return [...accumulator, ...new_result.results]; // Cette notation est équivalente à "results.push(new_result); return results"
+			return [...accumulator, ...new_result.results];
 		}, 
 		first_page.results
 	);
-	// Récupère une liste dont la longueur est égale au nombre de films voulus.
 	return data.slice(starting_movie, movies_per_category + starting_movie);
 }	
 
-//Initialize the pictures
-const set_categories = async category => {
-	//Create the query
+const create_direction_button = function(parent, direction) {
+	const button = document.createElement("button");
+	let image = "arrow-right.svg";
+	let text = "Défiler vers la droite";
+	let shift = 1;
+	if (direction === "previous") {
+		image = "arrow-left.svg"
+		text = "Défiler vers la gauche"
+		shift = -1
+	}
+	parent.appendChild(button);
+	button.setAttribute("class", direction);
+	button.setAttribute("type", "button");
+	button.innerHTML = `<img src=${image}  alt=${text}></img>`;
+	button.addEventListener('click', event => change_displayed_movies(parent, shift));
+	all_main_buttons.push(button);
+}
+
+const create_modal_button = function(parent, data, index) {
+	const modal_button = document.createElement("button");
+	parent.appendChild(modal_button);
+	modal_button.setAttribute("class", "open_modal");
+	modal_button.setAttribute("type", "button");
+	modal_button.setAttribute("aria-haspopups", "dialog");
+	modal_button.setAttribute("aria-controls", "movie_informations");
+	modal_button.innerHTML = `<img class="movie" src="${data.image_url}" alt="${data.title}"></img>`;
+	modal_button.addEventListener('click', event => open_modal(modal_button, data.url, data.image_url));
+	all_main_buttons.push(modal_button);
+	modal_button.setAttribute("aria-hidden", index < movies_displayed ? "false" : "true");
+}
+		
+	
+const set_categories = async function(category) {
 	const query = "http://localhost:8000/api/v1/titles/?" + category.getAttribute("query");
-	// Si on en est à la catégorie "meilleurs films", il faut éliminer le meilleur (qui est affiché séparé)
 	const ignored_movies = category.getAttribute("query") === "sort_by=-imdb_score" ? 1 : 0;
-	// Get all the required data
 	const movie_data = await get_movies(query, ignored_movies);
-	//Find where the images are
-	const movies = category.children[1].children
-	//Iterate over movie_data to set the images. It should only display a certain number and hide the others. /!\ If movie_data.length and movies.length are different, there will be issues. The HTML must be set correctly.
+	const movies = category.children[1];
+	create_direction_button(movies, "previous")
 	movie_data.forEach((movie, index) => {
-		//Créer les boutons
-		movies[index+1].children[0].setAttribute("src", movie_data[index].image_url);
-		movies[index+1].children[0].setAttribute("alt", movie_data[index].title);
-		movies[index+1].children[0].setAttribute("movie_url", movie_data[index].url);
-		//if (index >= movies_displayed) {
-			//movies[index].setAttribute("hidden", "");
-		//}
-	})
+		create_modal_button(movies, movie, index);
+	});
+	create_direction_button(movies, "next");
 }
 
-// Change which pictures are displayed. It will require the CSS to reorganize the pictures afterwards.
-const change_displayed_movies = async (movie_container, shift_change=0) => {
-	//Find where the images are.
-	//Get the value of the shift i.e how much the pictures are moved around.
-	const shift = parseInt(movie_container.getAttribute("indice")) + shift_change;
-	// Change the shift in the HTML (to be reused for future. It uses a modulo to prevent it from growing ad infinitam.
-	movie_container.setAttribute("indice", shift % movies_per_category);
-	// Get the index values that should NOT be hidden.
-	const displayed_movies = Array(movies_displayed).fill(1).map(
-		(element, index) => ((shift+index)%movies_per_category + movies_per_category)%movies_per_category
-	); //Obligé de bidouiller si jamais shift+index est négatif.
-	// Create an Array that will declare which image must be hidden and which one must not be.
-	const movies = Array(movies_per_category).fill(1).map(
-		(element, index) => displayed_movies.includes(index) ? "displayed": "hidden"
-	);
-	// Hide or reveal the image as needed. It affects every picture even if its attribute doesn't change.
-	movies.forEach((element, index) => {
-		if (movies[index] === "displayed") {
-			movie_container.children[index + 1].removeAttribute("hidden");
-		} else {
-			movie_container.children[index + 1].setAttribute("hidden", "");
-		}
-	})
+
+const change_displayed_movies = async function(movie_container, shift_change=0) {
+	if (shift_change > 0) {
+		movie_container.insertBefore(movie_container.children[1], movie_container.children[movies_per_category + 1]);
+		movie_container.children[movies_per_category].setAttribute("aria-hidden", "true");
+		movie_container.children[movies_displayed].setAttribute("aria-hidden", "false");
+	} else {
+		movie_container.insertBefore(movie_container.children[movies_per_category], movie_container.children[1]);
+		movie_container.children[1].setAttribute("aria-hidden", "false");
+		movie_container.children[movies_displayed + 1].setAttribute("aria-hidden", "true");
+	}	
 }
 
-const set_best_movie = async () => {
+const set_best_movie = async function() {
 	data = await get_query_result("http://localhost:8000/api/v1/titles/?sort_by=-imdb_score");
 	best_movie = data.results[0];
 	best_movie_div.children[0].children[0].innerHTML = best_movie.title;
@@ -114,7 +99,7 @@ const set_best_movie = async () => {
 	best_movie_div.children[1].setAttribute("movie_url", best_movie.url);
 }
 
-const open_modal = async(button, movie_url, image_url) => {
+const open_modal = async function(button, movie_url, image_url) {
 	movie_info = await get_query_result(movie_url);
 	const main_doc = document.getElementById("main-content");
 	main_doc.setAttribute("aria-hidden", true);
@@ -125,49 +110,37 @@ const open_modal = async(button, movie_url, image_url) => {
   }, 100) // Ca met le focus sur le bouton fermer, ça permet la navigation au clavier.
 	last_focus = button;
 	all_main_buttons.forEach(button => button.setAttribute("disabled", true));
+	main_doc.addEventListener("click", close_modal);
 }
 
-const close_modal = (button) => {
-	const modal = button.parentElement;
+const close_modal = function() {
+	const modal = document.getElementById("movie_informations");
 	const main_doc = document.getElementById("main-content");
 	main_doc.setAttribute("aria-hidden", false);
 	modal.setAttribute("aria-hidden", true);
 	last_focus.focus()
 	all_main_buttons.forEach(button => button.removeAttribute("disabled"));
+	main_doc.removeEventListener("click", close_modal)
 }
 	
 
-const convert_in_hours = (time_in_minutes) => {
-	let hours;
-	let leftover_minutes;
-	if (time_in_minutes >= 60) {
-		leftover_minutes = time_in_minutes % 60
-		hours = (time_in_minutes - leftover_minutes) / 60
+const convert_in_hours = function(time_in_minutes) {
+	const minutes = time_in_minutes % 60
+	const hours = (time_in_minutes - minutes) / 60
+	const minutes_text = minutes === 0 ? "" : minutes > 1 ? `${minutes} minutes` : "1 minute";
+	const hours_text = hours === 0 ? "" : hours > 1 ? `${hours} heures` : "1 heure";
+	if (hours_text && minutes_text) {
+		return `${hours_text} et ${minutes_text}`
 	} else {
-		hours = 0
-	}
-	if (hours === 0) {
-		return `${time_in_minutes} minutes`
-	} else if (leftover_minutes === 0) {
-			return `${hours > 1 ? `${hours} heures` : '1 heure'}`
-	} else {
-		return `${hours > 1 ? `${hours} heures` : "1 heure"} et ${leftover_minutes > 1 ? `${leftover_minutes} minutes` : "1 minute"}`
+		return `${hours_text}${minutes_text}`
 	}
 }
 
-//function formatReadingTime(timeInMinutes) {
-  //const hours = Math.floor(timeInMinutes / 60);
-  //const minutes = timeInMinutes % 60;
-  //return hours >= 1 ? `${hours} h ${minutes} min` : `${minutes} min`;
-//}
 
-	
-//Use a function syntax to define functions
-const load_modal = (modal, infos, url) => {
+const load_modal = function(modal, infos, url) {
 	modal.children[1].innerHTML = infos.title
-	modal.children[2].innerHTML = `informations à propos de ${infos.title}`
-	modal.children[3].setAttribute("src", url)
-	modal.children[4].innerHTML = `
+	modal.children[2].setAttribute("src", url)
+	modal.children[3].innerHTML = `
 			<ul>
 				<li><span role="legend">Titre</span> : ${infos.title}</li>
 				<li><span role="legend">Genres</span> : ${infos.genres.join(", ")}</li>
@@ -184,26 +157,27 @@ const load_modal = (modal, infos, url) => {
 			`
 }	
 	
-
-// Set the event for next buttons.
-buttons_next.forEach(button => button.addEventListener('click', event => change_displayed_movies(button.parentElement, 1)));
-
-// Set the event for previous buttons.
-buttons_previous.forEach(button => button.addEventListener('click', event => change_displayed_movies(button.parentElement, -1)));
-
 //Initialize all categories.
 categories.forEach(async category => {
 	await set_categories(category);
 })
+	
+
+
+
+
+
+
+
+
 //Initialize the best movie.
 set_best_movie()
 
-// Charge la modale et l'ouvre.
-buttons_modal.forEach(button => button.addEventListener('click', event => open_modal(button, button.children[0].getAttribute("movie_url"), button.children[0].getAttribute("src"))));
 best_movie_button_modal.addEventListener('click', event => {
 	balise = best_movie_button_modal.parentElement.nextElementSibling;
 	open_modal(best_movie_button_modal, balise.getAttribute("movie_url"), balise.getAttribute("src"));
-})
+});
+
 
 //ferme la modale.
 modal_close_button.addEventListener('click', event => close_modal(modal_close_button))
