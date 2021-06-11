@@ -109,22 +109,15 @@ nav {
 }
 
 
-.movie_informations[aria-hidden="true"] {
-  display: none;
-  opacity: 0;
-}
-
 .movie_informations{
   display: flex;
   flex-direction: column;
-  align-items: center;
   z-index: 1;
   position: fixed;
   top: 25%;
   right: 25%;
   bottom: 25%;
   left: 25%;
-  overflow-y: scroll;
   background-color: $modal-background;
   transition: .2s;
   border : 0.1rem;
@@ -150,10 +143,14 @@ nav {
 		font-size: 1.5rem;
 		margin-top: 0;
 	}
-	ul {
+	&__data {
+		display: flex;
+  		flex-direction: column;
+  		align-items: center;
 		list-style: none;
 		font-size: 2rem;
 		margin-bottom : 1 rem;
+		overflow-y: scroll;
 	}
 	span[role="legend"] {
 		font-size: 2.5rem;
