@@ -1,82 +1,73 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8"/>
-		<title>JustStreamIt</title>
-		<link rel="stylesheet" href="public/css/style.css" />
-	</head>
-	
-	<body>
-		<main class="main-content">
-			<div class="topsection">
-				<h1>JustStreamIt</h1>
-				<nav>
-					<ul>
-						<li><a href="#">Accueil</a></li>
-						<li><a href="#">Catégories</a></li>
-					</ul>
-				</nav>
+<html lang="fr">
+
+<head>
+	<meta charset="utf-8" />
+	<title>JustStreamIt</title>
+	<link rel="stylesheet" href="public/css/style.css" />
+</head>
+
+<body>
+	<main class="main-content">
+		<div class="topsection">
+			<h1>JustStreamIt</h1>
+			<nav>
+				<ul>
+					<li><a href="#">Accueil</a></li>
+					<li><a href="#">Catégories</a></li>
+				</ul>
+			</nav>
+		</div>
+		<div class="best_movie">
+			<div class="best_movie__text">
+				<h1>Titre de la vidéo</h1>
+				<button class="best_movie__open_modal" type="button" aria-haspopup="dialog"
+					aria-controls="movie_informations">
+					Infos
+				</button>
+				<p>Résumé du film</p>
 			</div>
-			<div class="best_movie">
-				<div class="best_movie__text">
-					<h1>Titre de la vidéo</h1> 
-					<button
-						class="best_movie__open_modal"
-						type="button" 
-						aria-haspopup="dialog"
-						aria-controls="movie_informations">
-						Infos
-					</button>
-					<p>Résumé du film</p>
-				</div>
-				<img class="best_movie__image" src = ""></img>
-			</div>
-			<div class="category" query="sort_by=-imdb_score">
-				<div class="category__movie_container">
-					<h1>Films les mieux notés</h1>
-					<div class="category__movie_container__movies"></div>
-				</div>
-			</div>
-			<div class="category" query="genre=Biography&sort_by=-imdb_score">
-				<div class="category__movie_container">
-					<h1>Biographie</h1>
-					<div class="category__movie_container__movies"></div>
-				</div>
-			</div>
-			<div class="category" query="genre=Crime&sort_by=-imdb_score">
-				<div class="category__movie_container">
-					<h1>Crime</h1>
-					<div class="category__movie_container__movies"></div>
-				</div>
-			</div>
-			<div class="category" query="genre=Drama&sort_by=-imdb_score">
-				<div class="category__movie_container">
-					<h1>Drama</h1>
-					<div class="category__movie_container__movies"></div>
-				</div>
-			</div>
-		</main>
-		<div 
-			class="movie_informations"  
-			role="dialog" 
-			aria-labelledby="movie_informations-title" 
-			aria-describedby="movie_informations-desc" 
-			aria-modal="true"	
-			aria-hidden="true" 
-			tabindex="-1"> 
-			<button
-				type="button" 
-				aria-label="Fermer"
-				title="Fermer la fenêtre avec les détails du film"
-				data-dismiss="movies_informations">
-					<img src="croix_modifiée.png" alt="fermer"></img>
-			</button>
-			<div class="movie_informations__data">
-				<h2 class="movie_informations-title"> Nom du film </h2>
-				<img src=""></img>
-				<ul></ul>
+			<img class="best_movie__image" src="not_found.png" alt="image not found">
+		</div>
+		<div class="category" id="sort_by=-imdb_score">
+			<div class="category__movie_container">
+				<h1>Films les mieux notés</h1>
+				<div class="category__movie_container__movies"></div>
 			</div>
 		</div>
-		<script src="./def.js"></script>
-	</body>
+		<div class="category" id="genre=Biography&sort_by=-imdb_score">
+			<div class="category__movie_container">
+				<h1>Biographie</h1>
+				<div class="category__movie_container__movies"></div>
+			</div>
+		</div>
+		<div class="category" id="genre=Crime&sort_by=-imdb_score">
+			<div class="category__movie_container">
+				<h1>Crime</h1>
+				<div class="category__movie_container__movies"></div>
+			</div>
+		</div>
+		<div class="category" id="genre=Drama&sort_by=-imdb_score">
+			<div class="category__movie_container">
+				<h1>Drama</h1>
+				<div class="category__movie_container__movies"></div>
+			</div>
+		</div>
+	</main>
+	<div id="movie_informations" role="dialog" aria-labelledby="movie_informations-title"
+		aria-describedby="movie_informations-desc" aria-modal="true" aria-hidden="true" tabindex="-1">
+		<button type="button" aria-label="Fermer" title="Fermer la fenêtre avec les détails du film"
+			data-dismiss="movies_informations">
+			<img src="croix_modifiée.png" alt="fermer">
+		</button>
+		<div class="movie_informations__data">
+			<h2 id="movie_informations-title"> Nom du film </h2>
+			<p id="movie_informations-desc"> Description du film </p>
+			<img src="not_found.png" alt="image not found">
+			<ul></ul>
+		</div>
+	</div>
+	<script src="./def.js"></script>
+</body>
+
 </html>

@@ -6,7 +6,7 @@ const bestMovieTag = document.querySelector('div.best_movie');
 const bestMovieModalButton = document.querySelector('button.best_movie__open_modal');
 const modalCloseButton = document.querySelector('button[data-dismiss]');
 var lastFocus;
-var modal = document.querySelector(".movie_informations");
+var modal = document.querySelector("#movie_informations");
 var allMainButtons = [];
 
 
@@ -33,39 +33,44 @@ const getMovies = async function(queryUrl, startingMovie) {
 
 const createDirectionButton = function(parent, direction) {
 	const button = document.createElement("button");
-	let image = "arrow-right.svg";
-	let text = "Défiler vers la droite";
-	let shift = 1;
-	let previous_child = null;
+	let image;
+	let text;
+	let shift;
+	let previousChild;
 	if (direction === "previous") {
 		image = "arrow-left.svg";
 		text = "Défiler vers la gauche";
 		shift = -1;
-		previous_child = parent.children[0];
+		previousChild = parent.children[0];
+	} else if (direction === "next") {
+		image = "arrow-right.svg";
+		text = "Défiler vers la droite";
+		shift = 1;
+		previousChild = null;
 	}
-	parent.insertBefore(button, previous_child);
+	parent.insertBefore(button, previousChild);
 	button.setAttribute("class", `category__${direction}`);
 	button.setAttribute("type", "button");
-	button.innerHTML = `<img src=${image}  alt=${text}></img>`;
+	button.innerHTML = `<img src=${image}  alt=${text}>`;
 	button.addEventListener('click', () => changeDisplayedMovies(parent.children[1].children[1], shift));
 	allMainButtons.push(button);
 };
 
 const createModalButton = function(parent, data, index) {
-	const modal_button = document.createElement("button");
-	parent.appendChild(modal_button);
-	modal_button.setAttribute("class", "category__open_modal");
-	modal_button.setAttribute("type", "button");
-	modal_button.setAttribute("aria-haspopups", "dialog");
-	modal_button.setAttribute("aria-controls", "movie_informations");
-	modal_button.innerHTML = `<img class="movie" src="${data.image_url}" alt="${data.title}"></img>`;
-	modal_button.addEventListener('click', () => openModal(modal_button, data.url, data.image_url));
-	allMainButtons.push(modal_button);
-	modal_button.setAttribute("aria-hidden", index < displayedMovies ? "false" : "true");
+	const modalButton = document.createElement("button");
+	parent.appendChild(modalButton);
+	modalButton.setAttribute("class", "category__open_modal");
+	modalButton.setAttribute("type", "button");
+	modalButton.setAttribute("aria-haspopups", "dialog");
+	modalButton.setAttribute("aria-controls", "movie_informations");
+	modalButton.innerHTML = `<img class="movie" src="${data.image_url}" alt="${data.title}">`;
+	modalButton.addEventListener('click', () => openModal(modalButton, data.url, data.image_url));
+	allMainButtons.push(modalButton);
+	modalButton.setAttribute("aria-hidden", index < displayedMovies ? "false" : "true");
 };
 			
 const initializeCategories = async function(category) {
-	const query = "http://localhost:8000/api/v1/titles/?" + category.getAttribute("query");
+	const query = `http://localhost:8000/api/v1/titles/?${category.getAttribute("id")}`;
 	const ignored_movies = category.getAttribute("query") === "sort_by=-imdb_score" ? 1 : 0;
 	const movie_data = await getMovies(query, ignored_movies);
 	createDirectionButton(category, "previous");
@@ -126,7 +131,7 @@ const openModal = async function(button, movie_url, image_url) {
 };
 
 const closeModal = function() {
-	const modal = document.querySelector(".movie_informations");
+	const modal = document.querySelector("#movie_informations");
 	const main_doc = document.querySelector(".main-content");
 	main_doc.setAttribute("aria-hidden", false);
 	modal.setAttribute("aria-hidden", true);
@@ -153,9 +158,8 @@ const convertInHours = function(time_in_minutes) {
 };
 
 const loadModal = function(modal, infos, url) {
-	modal.children[1].children[0].innerHTML = infos.title;
-	modal.children[1].children[1].setAttribute("src", url);
-	modal.children[1].children[2].innerHTML = `
+	modal.children[1].children[2].setAttribute("src", url);
+	modal.children[1].children[3].innerHTML = `
 				<li><span role="legend">Titre</span> : ${infos.title}</li>
 				<li><span role="legend">Genres</span> : ${infos.genres.join(", ")}</li>
 				<li><span role="legend">Date de sortie</span>: ${infos.date_published}</li>
