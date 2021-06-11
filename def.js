@@ -18,7 +18,7 @@ const getQueryResult = async function(url) {
 };
 
 const getMovies = async function(queryUrl, startingMovie) {
-	const firstPage = await getQueryResult(queryUrl)
+	const firstPage = await getQueryResult(queryUrl);
 	const pagesToFetch = Math.ceil((moviesPerCategory + startingMovie) / answersPerAPIPage);
 	const pagesUrl = Array(pagesToFetch - 1).fill(1).map((element, index) => `${queryUrl}&page=${index+2}`);
 	const data = await pagesUrl.reduce(
@@ -36,18 +36,18 @@ const createDirectionButton = function(parent, direction) {
 	let image = "arrow-right.svg";
 	let text = "Défiler vers la droite";
 	let shift = 1;
-	let previous_child = null
+	let previous_child = null;
 	if (direction === "previous") {
-		image = "arrow-left.svg"
-		text = "Défiler vers la gauche"
-		shift = -1
-		previous_child = parent.children[0]
+		image = "arrow-left.svg";
+		text = "Défiler vers la gauche";
+		shift = -1;
+		previous_child = parent.children[0];
 	}
 	parent.insertBefore(button, previous_child);
 	button.setAttribute("class", `category__${direction}`);
 	button.setAttribute("type", "button");
 	button.innerHTML = `<img src=${image}  alt=${text}></img>`;
-	button.addEventListener('click', event => changeDisplayedMovies(parent.children[1].children[1], shift));
+	button.addEventListener('click', () => changeDisplayedMovies(parent.children[1].children[1], shift));
 	allMainButtons.push(button);
 };
 
@@ -59,7 +59,7 @@ const createModalButton = function(parent, data, index) {
 	modal_button.setAttribute("aria-haspopups", "dialog");
 	modal_button.setAttribute("aria-controls", "movie_informations");
 	modal_button.innerHTML = `<img class="movie" src="${data.image_url}" alt="${data.title}"></img>`;
-	modal_button.addEventListener('click', event => openModal(modal_button, data.url, data.image_url));
+	modal_button.addEventListener('click', () => openModal(modal_button, data.url, data.image_url));
 	allMainButtons.push(modal_button);
 	modal_button.setAttribute("aria-hidden", index < displayedMovies ? "false" : "true");
 };
@@ -68,7 +68,7 @@ const initializeCategories = async function(category) {
 	const query = "http://localhost:8000/api/v1/titles/?" + category.getAttribute("query");
 	const ignored_movies = category.getAttribute("query") === "sort_by=-imdb_score" ? 1 : 0;
 	const movie_data = await getMovies(query, ignored_movies);
-	createDirectionButton(category, "previous")
+	createDirectionButton(category, "previous");
 	const movies = category.children[1].children[1];
 	movie_data.forEach((movie, index) => {
 		createModalButton(movies, movie, index);
@@ -109,13 +109,16 @@ const openModal = async function(button, movie_url, image_url) {
 	mainDocument.setAttribute("aria-hidden", true);
 	modal.setAttribute("aria-hidden", false);
 	loadModal(modal, movieInfo, image_url);
-	setTimeout(() => {
+	setTimeout(
+		() => {
 		modalCloseButton.focus();
-  }, 100)
+  		},
+		100
+	);
 	lastFocus = button;
 	allMainButtons.forEach(button => button.setAttribute("disabled", true));
 	mainDocument.addEventListener("click", closeModal);
-	document.addEventListener("keyup", (event) => {
+	document.addEventListener("keyup", event => {
 		if (event.key === "Escape") {
 			closeModal();
 		};
@@ -129,29 +132,29 @@ const closeModal = function() {
 	modal.setAttribute("aria-hidden", true);
 	lastFocus.focus()
 	allMainButtons.forEach(button => button.removeAttribute("disabled"));
-	main_doc.removeEventListener("click", closeModal)
-	document.removeEventListener("keyup", (event) => {
+	main_doc.removeEventListener("click", closeModal);
+	document.removeEventListener("keyup", event => {
 		if (event.key === "Escape") {
-			closeModal()
+			closeModal();
 		};
 	});
 };
 	
 const convertInHours = function(time_in_minutes) {
-	const minutes = time_in_minutes % 60
-	const hours = (time_in_minutes - minutes) / 60
+	const minutes = time_in_minutes % 60;
+	const hours = (time_in_minutes - minutes) / 60;
 	const minutes_text = minutes === 0 ? "" : minutes > 1 ? `${minutes} minutes` : "1 minute";
 	const hours_text = hours === 0 ? "" : hours > 1 ? `${hours} heures` : "1 heure";
 	if (hours_text && minutes_text) {
-		return `${hours_text} et ${minutes_text}`
+		return `${hours_text} et ${minutes_text}`;
 	} else {
-		return `${hours_text}${minutes_text}`
+		return `${hours_text}${minutes_text}`;
 	}
 };
 
 const loadModal = function(modal, infos, url) {
-	modal.children[1].children[0].innerHTML = infos.title
-	modal.children[1].children[1].setAttribute("src", url)
+	modal.children[1].children[0].innerHTML = infos.title;
+	modal.children[1].children[1].setAttribute("src", url);
 	modal.children[1].children[2].innerHTML = `
 				<li><span role="legend">Titre</span> : ${infos.title}</li>
 				<li><span role="legend">Genres</span> : ${infos.genres.join(", ")}</li>
@@ -170,9 +173,7 @@ const loadModal = function(modal, infos, url) {
 categories.forEach(async category => {
 	await initializeCategories(category);
 });	
+
 initializeBestMovie();
 
-modalCloseButton.addEventListener('click', event => closeModal(modalCloseButton))
-
-
-	
+modalCloseButton.addEventListener('click', event => closeModal(modalCloseButton));
