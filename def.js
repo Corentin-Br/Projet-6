@@ -1,55 +1,57 @@
-var answers_per_API_page = 5;
-var movies_per_category = 7;
-var movies_displayed = 4;
+var answersPerAPIPage = 5;
+var moviesPerCategory = 7;
+var displayedMovies = 4;
 const categories = document.querySelectorAll('div.category');
-const best_movie_div = document.querySelector('div.best_movie');
-const best_movie_button_modal = document.querySelector('button.best_movie__open_modal');
-const modal_close_button = document.querySelector('button[data-dismiss]');
-var last_focus;
+const bestMovieTag = document.querySelector('div.best_movie');
+const bestMovieModalButton = document.querySelector('button.best_movie__open_modal');
+const modalCloseButton = document.querySelector('button[data-dismiss]');
+var lastFocus;
 var modal = document.querySelector(".movie_informations");
-var all_main_buttons = [];
+var allMainButtons = [];
 
 
-const get_query_result = async function(url) {
+const getQueryResult = async function(url) {
 	res = await fetch(url);
 	if (res.ok) {
 		return res.json();
 	}
 };
 
-const get_movies = async function(query_url, starting_movie) {
-	const first_page = await get_query_result(query_url)
-	const pages_to_fetch = Math.ceil((movies_per_category + starting_movie) / answers_per_API_page);
-	const pages_url = Array(pages_to_fetch - 1).fill(1).map((element, index) => `${query_url}&page=${index+2}`);
-	const data = await pages_url.reduce(
+const getMovies = async function(queryUrl, startingMovie) {
+	const firstPage = await getQueryResult(queryUrl)
+	const pagesToFetch = Math.ceil((moviesPerCategory + startingMovie) / answersPerAPIPage);
+	const pagesUrl = Array(pagesToFetch - 1).fill(1).map((element, index) => `${queryUrl}&page=${index+2}`);
+	const data = await pagesUrl.reduce(
 		async (accumulator, value) => {
-			const new_result = await get_query_result(value);
-			return [...accumulator, ...new_result.results];
+			const newResult = await getQueryResult(value);
+			return [...accumulator, ...newResult.results];
 		}, 
-		first_page.results
+		firstPage.results
 	);
-	return data.slice(starting_movie, movies_per_category + starting_movie);
+	return data.slice(startingMovie, moviesPerCategory + startingMovie);
 };
 
-const create_direction_button = function(parent, direction) {
+const createDirectionButton = function(parent, direction) {
 	const button = document.createElement("button");
 	let image = "arrow-right.svg";
 	let text = "Défiler vers la droite";
 	let shift = 1;
+	let previous_child = null
 	if (direction === "previous") {
 		image = "arrow-left.svg"
 		text = "Défiler vers la gauche"
 		shift = -1
+		previous_child = parent.children[0]
 	}
-	parent.appendChild(button);
+	parent.insertBefore(button, previous_child);
 	button.setAttribute("class", `category__${direction}`);
 	button.setAttribute("type", "button");
 	button.innerHTML = `<img src=${image}  alt=${text}></img>`;
-	button.addEventListener('click', event => change_displayed_movies(parent, shift));
-	all_main_buttons.push(button);
+	button.addEventListener('click', event => changeDisplayedMovies(parent.children[1].children[1], shift));
+	allMainButtons.push(button);
 };
 
-const create_modal_button = function(parent, data, index) {
+const createModalButton = function(parent, data, index) {
 	const modal_button = document.createElement("button");
 	parent.appendChild(modal_button);
 	modal_button.setAttribute("class", "category__open_modal");
@@ -57,85 +59,85 @@ const create_modal_button = function(parent, data, index) {
 	modal_button.setAttribute("aria-haspopups", "dialog");
 	modal_button.setAttribute("aria-controls", "movie_informations");
 	modal_button.innerHTML = `<img class="movie" src="${data.image_url}" alt="${data.title}"></img>`;
-	modal_button.addEventListener('click', event => open_modal(modal_button, data.url, data.image_url));
-	all_main_buttons.push(modal_button);
-	modal_button.setAttribute("aria-hidden", index < movies_displayed ? "false" : "true");
+	modal_button.addEventListener('click', event => openModal(modal_button, data.url, data.image_url));
+	allMainButtons.push(modal_button);
+	modal_button.setAttribute("aria-hidden", index < displayedMovies ? "false" : "true");
 };
 			
-const set_categories = async function(category) {
+const initializeCategories = async function(category) {
 	const query = "http://localhost:8000/api/v1/titles/?" + category.getAttribute("query");
 	const ignored_movies = category.getAttribute("query") === "sort_by=-imdb_score" ? 1 : 0;
-	const movie_data = await get_movies(query, ignored_movies);
-	const movies = category.children[1];
-	create_direction_button(movies, "previous")
+	const movie_data = await getMovies(query, ignored_movies);
+	createDirectionButton(category, "previous")
+	const movies = category.children[1].children[1];
 	movie_data.forEach((movie, index) => {
-		create_modal_button(movies, movie, index);
+		createModalButton(movies, movie, index);
 	});
-	create_direction_button(movies, "next");
+	createDirectionButton(category, "next");
 };
 
-const change_displayed_movies = async function(movie_container, shift_change=0) {
-	if (shift_change > 0) {
-		movie_container.insertBefore(movie_container.children[1], movie_container.children[movies_per_category + 1]);
-		movie_container.children[movies_per_category].setAttribute("aria-hidden", "true");
-		movie_container.children[movies_displayed].setAttribute("aria-hidden", "false");
+const changeDisplayedMovies = async function(movieContainer, shiftChange=0) {
+	if (shiftChange > 0) {
+		movieContainer.insertBefore(movieContainer.children[0], null);
+		movieContainer.children[moviesPerCategory - 1].setAttribute("aria-hidden", "true");
+		movieContainer.children[displayedMovies - 1].setAttribute("aria-hidden", "false");
 	} else {
-		movie_container.insertBefore(movie_container.children[movies_per_category], movie_container.children[1]);
-		movie_container.children[1].setAttribute("aria-hidden", "false");
-		movie_container.children[movies_displayed + 1].setAttribute("aria-hidden", "true");
+		movieContainer.insertBefore(movieContainer.children[moviesPerCategory - 1], movieContainer.children[0]);
+		movieContainer.children[0].setAttribute("aria-hidden", "false");
+		movieContainer.children[displayedMovies].setAttribute("aria-hidden", "true");
 	}	
 };
 
-const set_best_movie = async function() {
-	data = await get_query_result("http://localhost:8000/api/v1/titles/?sort_by=-imdb_score");
-	best_movie = data.results[0];
-	best_movie_div.children[0].children[0].innerHTML = best_movie.title;
-	const details = await get_query_result(best_movie.url);
-	best_movie_div.children[0].children[2].innerHTML = details.description;
-	best_movie_div.children[1].setAttribute("src", best_movie.image_url);
-	best_movie_div.children[1].setAttribute("alt", best_movie.title);
-	best_movie_div.children[1].setAttribute("movie_url", best_movie.url);
-	best_movie_div.children[0].children[1].addEventListener('click', event => {
-		balise = best_movie_div.children[1];
-		open_modal(best_movie_div.children[0].children[1], balise.getAttribute("movie_url"), balise.getAttribute("src"));
+const initializeBestMovie = async function() {
+	data = await getQueryResult("http://localhost:8000/api/v1/titles/?sort_by=-imdb_score");
+	const bestMovieData = data.results[0];
+	bestMovieTag.children[0].children[0].innerHTML = bestMovieData.title;
+	const details = await getQueryResult(bestMovieData.url);
+	bestMovieTag.children[0].children[2].innerHTML = details.description;
+	bestMovieTag.children[1].setAttribute("src", bestMovieData.image_url);
+	bestMovieTag.children[1].setAttribute("alt", bestMovieData.title);
+	bestMovieTag.children[1].setAttribute("movie_url", bestMovieData.url);
+	bestMovieTag.children[0].children[1].addEventListener('click', event => {
+		balise = bestMovieTag.children[1];
+		openModal(bestMovieTag.children[0].children[1], balise.getAttribute("movie_url"), balise.getAttribute("src"));
 	});
 };
 
-const open_modal = async function(button, movie_url, image_url) {
-	movie_info = await get_query_result(movie_url);
-	const main_doc = document.querySelector(".main-content");
-	main_doc.setAttribute("aria-hidden", true);
+const openModal = async function(button, movie_url, image_url) {
+	const movieInfo = await getQueryResult(movie_url);
+	const mainDocument = document.querySelector(".main-content");
+	mainDocument.setAttribute("aria-hidden", true);
 	modal.setAttribute("aria-hidden", false);
-	load_modal(modal, movie_info, image_url);
+	loadModal(modal, movieInfo, image_url);
 	setTimeout(() => {
-		modal_close_button.focus();
+		modalCloseButton.focus();
   }, 100)
-	last_focus = button;
-	all_main_buttons.forEach(button => button.setAttribute("disabled", true));
-	main_doc.addEventListener("click", close_modal);
+	lastFocus = button;
+	allMainButtons.forEach(button => button.setAttribute("disabled", true));
+	mainDocument.addEventListener("click", closeModal);
 	document.addEventListener("keyup", (event) => {
 		if (event.key === "Escape") {
-			close_modal();
+			closeModal();
 		};
 	});
 };
 
-const close_modal = function() {
+const closeModal = function() {
 	const modal = document.querySelector(".movie_informations");
 	const main_doc = document.querySelector(".main-content");
 	main_doc.setAttribute("aria-hidden", false);
 	modal.setAttribute("aria-hidden", true);
-	last_focus.focus()
-	all_main_buttons.forEach(button => button.removeAttribute("disabled"));
-	main_doc.removeEventListener("click", close_modal)
+	lastFocus.focus()
+	allMainButtons.forEach(button => button.removeAttribute("disabled"));
+	main_doc.removeEventListener("click", closeModal)
 	document.removeEventListener("keyup", (event) => {
 		if (event.key === "Escape") {
-			close_modal()
+			closeModal()
 		};
 	});
 };
 	
-const convert_in_hours = function(time_in_minutes) {
+const convertInHours = function(time_in_minutes) {
 	const minutes = time_in_minutes % 60
 	const hours = (time_in_minutes - minutes) / 60
 	const minutes_text = minutes === 0 ? "" : minutes > 1 ? `${minutes} minutes` : "1 minute";
@@ -147,11 +149,10 @@ const convert_in_hours = function(time_in_minutes) {
 	}
 };
 
-const load_modal = function(modal, infos, url) {
-	modal.children[1].innerHTML = infos.title
-	modal.children[2].setAttribute("src", url)
-	modal.children[3].innerHTML = `
-			<ul>
+const loadModal = function(modal, infos, url) {
+	modal.children[1].children[0].innerHTML = infos.title
+	modal.children[1].children[1].setAttribute("src", url)
+	modal.children[1].children[2].innerHTML = `
 				<li><span role="legend">Titre</span> : ${infos.title}</li>
 				<li><span role="legend">Genres</span> : ${infos.genres.join(", ")}</li>
 				<li><span role="legend">Date de sortie</span>: ${infos.date_published}</li>
@@ -159,20 +160,19 @@ const load_modal = function(modal, infos, url) {
 				<li><span role="legend">Score IMDB</span> : ${infos.imdb_score}</li>
 				<li><span role="legend">Réalisateur</span> : ${infos.directors.join(", ")}</li>
 				<li><span role="legend">Acteurs</span> : ${infos.actors.join(", ")}</li>
-				<li><span role="legend">Durée</span> : ${convert_in_hours(infos.duration)}</li>
+				<li><span role="legend">Durée</span> : ${convertInHours(infos.duration)}</li>
 				<li><span role="legend">Pays d'origine</span> : ${infos.countries.join(", ")} </li>
 				<li><span role="legend">Résultat au box office</span> : ${infos.worldwide_gross_income === null ? "inconnu" : `${infos.worldwide_gross_income} USD`}</li>
 				<li><span role="legend">Résumé</span> : ${infos.long_description}</li>
-			</ul> 
 			`
 };
 
 categories.forEach(async category => {
-	await set_categories(category);
+	await initializeCategories(category);
 });	
-set_best_movie();
+initializeBestMovie();
 
-modal_close_button.addEventListener('click', event => close_modal(modal_close_button))
+modalCloseButton.addEventListener('click', event => closeModal(modalCloseButton))
 
 
 	
