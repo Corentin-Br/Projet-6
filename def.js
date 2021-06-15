@@ -71,7 +71,7 @@ const createModalButton = function(parent, data, index) {
 			
 const initializeCategories = async function(category) {
 	const query = `http://localhost:8000/api/v1/titles/?${category.getAttribute("id")}`;
-	const ignored_movies = category.getAttribute("query") === "sort_by=-imdb_score" ? 1 : 0;
+	const ignored_movies = category.getAttribute("id") === "sort_by=-imdb_score" ? 1 : 0;
 	const movie_data = await getMovies(query, ignored_movies);
 	createDirectionButton(category, "previous");
 	const movies = category.children[1].children[1];
