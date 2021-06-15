@@ -106,6 +106,7 @@ const initializeBestMovie = async function() {
 		balise = bestMovieTag.children[1];
 		openModal(bestMovieTag.children[0].children[1], balise.getAttribute("movie_url"), balise.getAttribute("src"));
 	});
+	allMainButtons.push(bestMovieTag.children[0].children[1])
 };
 
 const openModal = async function(button, movie_url, image_url) {
