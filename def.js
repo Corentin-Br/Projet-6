@@ -101,10 +101,8 @@ const initializeBestMovie = async function() {
 	bestMovieTag.children[0].children[2].innerHTML = details.description;
 	bestMovieTag.children[1].setAttribute("src", bestMovieData.image_url);
 	bestMovieTag.children[1].setAttribute("alt", bestMovieData.title);
-	bestMovieTag.children[1].setAttribute("movie_url", bestMovieData.url);
 	bestMovieTag.children[0].children[1].addEventListener('click', event => {
-		balise = bestMovieTag.children[1];
-		openModal(bestMovieTag.children[0].children[1], balise.getAttribute("movie_url"), balise.getAttribute("src"));
+		openModal(bestMovieTag.children[0].children[1], bestMovieData.url, bestMovieData.image_url);
 	});
 	allMainButtons.push(bestMovieTag.children[0].children[1])
 };
