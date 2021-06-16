@@ -51,7 +51,7 @@ const createDirectionButton = function(parent, direction) {
 	parent.insertBefore(button, previousChild);
 	button.setAttribute("class", `category__${direction}`);
 	button.setAttribute("type", "button");
-	button.innerHTML = `<img src=${image}  alt=${text}>`;
+	button.innerHTML = `<img src=${image}  alt="${text}">`;
 	button.addEventListener('click', () => changeDisplayedMovies(parent.children[1].children[1], shift));
 	allMainButtons.push(button);
 };
